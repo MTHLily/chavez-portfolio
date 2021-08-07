@@ -1,52 +1,92 @@
 <template>
-  <div class="flex min-h-screen font-mono">
-    <aside class="nav--menu" :class="{ collapsed: collapse }">
-      <div class="nav--wrapper sticky top-0 w-full justify-center align-center">
+  <div class="app--content">
+    <aside class="nav--menu">
+      <div class="nav--wrapper" :class="{ active: active }">
         <!-- Logo -->
-        <div class="w-full pt-10 mb-20" @click="collapse = !collapse">
-          <h1 class="text-2xl text-center">{{ globals.shorthand }}</h1>
-          <h6 class="text-sm text-center">{{ globals.siteName }}</h6>
+        <div class="logo--container">
+          <div
+            class="
+              m-4
+              p-1
+              absolute
+              hover:bg-gray-200
+              rounded
+              cursor-pointer
+              right-0
+            "
+            @click="active = !active"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </div>
+          <NuxtLink to="/">
+            <h1 class="text-2xl text-center">
+              {{ globals.shorthand }}
+            </h1>
+            <h6 class="text-sm text-center">
+              {{ globals.siteName }}
+            </h6>
+          </NuxtLink>
         </div>
 
         <!-- Nav Items -->
-        <ul class="flex flex-col justify-between h-50 mb-20">
-          <li
-            v-for="nav in navItems"
-            :key="nav.label"
-            class="block relative py-2"
-          >
-            <NuxtLink
-              v-slot="{ isActive, navigate, href }"
-              :to="nav.route"
-              custom
+        <nav
+          class="p-4 w-full collapse"
+          :class="{ 'collapse-open': $breakpoints.lSm || active }"
+        >
+          <input type="checkbox" />
+          <div class="collapse-content duration-500">
+            <ul
+              class="
+                flex flex-col
+                justify-between
+                h-50
+                w-full
+                mb-20
+                divide-y divide-gray-200
+              "
             >
-              <NavItem
-                :route="{ navigate, href, isActive }"
-                :nav="nav"
-                :collapse="collapse"
-              ></NavItem>
-            </NuxtLink>
-          </li>
-        </ul>
+              <template v-for="nav in navItems">
+                <NuxtLink :key="nav.label" :to="nav.route" class="text-center">
+                  <li class="block relative py-2 hover:bg-gray-200">
+                    {{ nav.label }}
+                  </li>
+                </NuxtLink>
+              </template>
+            </ul>
 
-        <!-- Social Media -->
-        <div class="flex justify-around" :class="{ 'flex-col': collapse }">
-          <a
-            v-for="(socMed, ind) in globals.socialNetworks"
-            :key="ind"
-            :href="socMed.url"
-            class="m-2 justify-center flex"
-          >
-            <svg class="w-6 h-6">
-              <image
-                style="fill: white !important; color: white !important"
-                :xlink:href="`${$config.backendUrl}${socMed.icon.url}`"
-                width="24"
-                height="24"
-              />
-            </svg>
-          </a>
-        </div>
+            <!-- Social Media -->
+            <div class="flex justify-around">
+              <a
+                v-for="(socMed, ind) in globals.socialNetworks"
+                :key="ind"
+                :href="socMed.url"
+                class="m-2 justify-center flex"
+              >
+                <svg class="w-6 h-6">
+                  <image
+                    style="fill: white !important; color: white !important"
+                    :xlink:href="`${$config.backendUrl}${socMed.icon.url}`"
+                    width="24"
+                    height="24"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </nav>
       </div>
     </aside>
     <main class="flex-1">
@@ -61,7 +101,8 @@ import { mapState } from 'vuex'
 
 export default {
   data: () => ({
-    collapse: false,
+    active: false,
+    portfolioActive: false,
     navItems: [
       {
         label: 'Portfolio',
@@ -88,20 +129,45 @@ export default {
 
 <style lang="scss">
 body {
-  @apply bg-gray-50;
+  @apply bg-gray-50 min-h-screen;
 }
 
-.nav--menu {
-  @apply bg-yellow-100 min-h-full pl-2 flex flex-col text-gray-700 items-end p-0 shadow;
-  width: 15rem;
-
-  &.collapsed {
-    width: 6rem;
+.app--content {
+  @apply flex font-mono flex-col;
+  @screen sm {
+    @apply flex-row;
   }
 }
 
-.logo--container {
-  background-color: #61737d;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='152' height='152' viewBox='0 0 152 152'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='temple' fill='%23ece8a8' fill-opacity='0.99'%3E%3Cpath d='M152 150v2H0v-2h28v-8H8v-20H0v-2h8V80h42v20h20v42H30v8h90v-8H80v-42h20V80h42v40h8V30h-8v40h-42V50H80V8h40V0h2v8h20v20h8V0h2v150zm-2 0v-28h-8v20h-20v8h28zM82 30v18h18V30H82zm20 18h20v20h18V30h-20V10H82v18h20v20zm0 2v18h18V50h-18zm20-22h18V10h-18v18zm-54 92v-18H50v18h18zm-20-18H28V82H10v38h20v20h38v-18H48v-20zm0-2V82H30v18h18zm-20 22H10v18h18v-18zm54 0v18h38v-20h20V82h-18v20h-20v20H82zm18-20H82v18h18v-18zm2-2h18V82h-18v18zm20 40v-18h18v18h-18zM30 0h-2v8H8v20H0v2h8v40h42V50h20V8H30V0zm20 48h18V30H50v18zm18-20H48v20H28v20H10V30h20V10h38v18zM30 50h18v18H30V50zm-2-40H10v18h18V10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+.nav--menu {
+  @apply pl-2 flex text-gray-700 items-end min-w-full;
+  width: 15rem;
+
+  .nav--wrapper {
+    @apply sticky top-0 w-full justify-around h-full flex flex-col-reverse;
+
+    .logo--container {
+      @apply w-full px-12 mb-20 flex flex-col;
+
+      @screen sm {
+        div:first-child {
+          display: none;
+        }
+      }
+    }
+
+    @screen sm {
+      @apply min-h-full flex-col;
+    }
+  }
+
+  @screen sm {
+    @apply min-w-0 #{!important};
+    @apply min-h-screen w-80 pl-2 flex flex-col text-gray-700 items-end p-0 shadow;
+  }
 }
+
+// .nuxt-link-active {
+//   @apply bg-gray-100;
+// }
 </style>

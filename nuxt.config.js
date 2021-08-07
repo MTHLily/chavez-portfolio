@@ -50,6 +50,18 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    [
+      'nuxt-breakpoints',
+      {
+        sm: 640,
+        md: 768,
+        lg: 1024,
+        xl: 1280,
+        options: {
+          polyfill: true,
+        },
+      },
+    ],
     // '@nuxtjs/proxy',
     // '@nuxtjs/apollo',
   ],
